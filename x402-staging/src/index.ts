@@ -44,7 +44,7 @@ export class TestnetPayments extends DurableObject<Env> {
     )`);
   }
 
-  async execute(payment: Proof, graph: Graph, recipient: string): Promise<Outcome> {
+  async execute(payment: Proof, graph: Graph, recipient: string, recoveryTx?: string): Promise<Outcome> {
     const { key, auth, proof, signature } = payment;
     const fingerprint = await sha256(JSON.stringify([signature, auth, graph]));
     const sql = this.ctx.storage.sql;
@@ -55,8 +55,21 @@ export class TestnetPayments extends DurableObject<Env> {
     if (previous) {
       if (previous.proof_hash !== fingerprint) return error(409, "payment_already_bound");
       if (previous.phase === "ready" || previous.phase === "submitted") return this.deliver(previous, payment);
+      if (previous.phase === "submitting" && recoveryTx) {
+        try {
+          if (!await verifyReceipt(recoveryTx, auth)) return error(409, "recovery_transaction_not_confirmed");
+        } catch {
+          return error(503, "recovery_receipt_unavailable");
+        }
+        const settlement: SettleResponse = { success: true, network: NETWORK, transaction: recoveryTx, payer: auth.from };
+        sql.exec("UPDATE payments SET phase = 'ready', settlement = ? WHERE payment_key = ? AND phase = 'submitting'",
+          JSON.stringify(settlement), key);
+        await this.ctx.storage.sync();
+        return this.deliver(lookup(), payment);
+      }
       return error(409, previous.phase === "submitting" ? "settlement_pending_reconciliation" : "analysis_in_progress");
     }
+    if (recoveryTx) return error(409, "recovery_payment_not_found");
     if (!availableWindow(auth)) return error(402, "invalid_payment_window");
     if (sql.exec<{ n: number }>("SELECT count(*) AS n FROM payments").one().n >= CAP) {
       return error(429, "testnet_cap_reached");
@@ -98,7 +111,7 @@ export class TestnetPayments extends DurableObject<Env> {
     try {
       const settlement = await client.settle(proof, expected);
       if (!confirmed(settlement, auth.from)) return error(503, "settlement_pending_reconciliation");
-      sql.exec("UPDATE payments SET phase = 'submitted', settlement = ? WHERE payment_key = ?",
+      sql.exec("UPDATE payments SET phase = 'submitted', settlement = ? WHERE payment_key = ? AND phase = 'submitting'",
         JSON.stringify(settlement), key);
     } catch {
       return error(503, "settlement_pending_reconciliation");
@@ -121,10 +134,10 @@ export class TestnetPayments extends DurableObject<Env> {
   }
 }
 
-async function paid(graph: Graph, token: unknown, recipient: string, env: Bindings): Promise<Outcome> {
+async function paid(graph: Graph, token: unknown, recipient: string, env: Bindings, recoveryTx?: string): Promise<Outcome> {
   const proof = parseProof(token, recipient);
   if (!proof) return error(402, "invalid_payment_proof");
-  return env.PAYMENTS.getByName("isolated-sepolia-run").execute(proof, graph, recipient);
+  return env.PAYMENTS.getByName("isolated-sepolia-run").execute(proof, graph, recipient, recoveryTx);
 }
 
 function recipientIfReady(env: Bindings) {
@@ -212,7 +225,12 @@ export default {
     if (!parsed.success) return json({ error: "invalid_dependency_graph" }, 400);
     try { mapGraph(parsed.data); } catch { return json({ error: "invalid_dependency_graph" }, 400); }
     const token = request.headers.get("payment-signature");
-    const result = token === null ? error(402, "PAYMENT_REQUIRED") : await paid(parsed.data, token, recipient, env);
+    const recoveryTx = request.headers.get("payment-recovery-transaction");
+    if (recoveryTx !== null && (!token || !/^0x[0-9a-f]{64}$/i.test(recoveryTx))) {
+      return json({ error: "invalid_recovery_request" }, 400);
+    }
+    const result = token === null ? error(402, "PAYMENT_REQUIRED") :
+      await paid(parsed.data, token, recipient, env, recoveryTx?.toLowerCase());
     if (result.status === 402) {
       const quote = { ...challenge(recipient, new URL(path, request.url).toString()), error: result.error };
       return json(quote, 402, { "payment-required": encodePaymentRequiredHeader(quote) });

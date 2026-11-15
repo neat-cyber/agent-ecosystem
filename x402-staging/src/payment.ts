@@ -110,8 +110,11 @@ export async function verifyReceipt(transaction: string, auth: NonNullable<Retur
   const payer = topicAddress(auth.from);
   const payee = topicAddress(auth.to);
   const amount = `0x${BigInt(AMOUNT).toString(16).padStart(64, "0")}`;
-  return logs.some(log => log.topics[0] === transferTopic && log.topics[1] === payer &&
-    log.topics[2] === payee && log.data === amount) &&
-    logs.some(log => log.topics[0] === authorizationTopic && log.topics[1] === payer &&
-      log.topics[2] === auth.nonce.toLowerCase());
+  return logs.some((log, index) => {
+    if (log.topics[0] !== authorizationTopic || log.topics[1] !== payer ||
+      log.topics[2] !== auth.nonce.toLowerCase()) return false;
+    const transfer = logs[index + 1];
+    return transfer?.topics[0] === transferTopic && transfer.topics[1] === payer &&
+      transfer.topics[2] === payee && transfer.data === amount;
+  });
 }

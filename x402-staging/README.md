@@ -42,3 +42,9 @@ node /path/to/x402-staging/scripts/npm-graph.mjs async < npm-tree.local.json > r
 ```
 
 Keep the intermediate npm tree local. It can contain paths or registry URLs. The graph covers the selected branches as represented by npm, including optional or development dependencies that appear in that tree. Choose a small branch for the pilot. An unresolved, private-registry, or oversized branch is rejected instead of being presented as an exhaustive review.
+
+## Recover an analysis after an uncertain testnet settlement
+
+If the facilitator connection failed after submission and you have the confirmed transaction hash, retry the HTTP request with the same graph and original `PAYMENT-SIGNATURE`. Include the hash as `Payment-Recovery-Transaction`. The Worker checks Base Sepolia for the matching USDC authorization and transfer. A valid receipt returns the stored report without resubmitting payment. A recovery request never starts a new settlement.
+
+Keep the original signature private. If the hash is unknown, find the corresponding authorization and transfer on Base Sepolia or obtain it from the facilitator before retrying recovery. This HTTP recovery path does not automatically discover a missing hash.

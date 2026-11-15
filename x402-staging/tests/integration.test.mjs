@@ -26,6 +26,8 @@ test("Worker validates the graph, verifies, analyzes, settles, checks receipt, a
   let failReceipt = false;
   let failSettlement = false;
   let auth;
+  const secondTx = `0x${"b".repeat(64)}`;
+  const wrongTx = `0x${"c".repeat(64)}`;
   const mf = new Miniflare(convertV4MiniflareOptions({ ...options, async outboundService(request) {
     const url = new URL(request.url);
     if (url.hostname === "x402.org") {
@@ -48,26 +50,30 @@ test("Worker validates the graph, verifies, analyzes, settles, checks receipt, a
     }
     assert.equal(url.hostname, "sepolia.base.org");
     receipts++;
+    const { params: [requestedTx] } = await request.json();
     if (failReceipt) return Response.json({ result: null });
+    const actualTx = failSettlement ? secondTx : tx;
     return Response.json({
       result: {
-        status: "0x1", transactionHash: tx,
+        status: "0x1", transactionHash: requestedTx,
         logs: [{
+          address: ASSET, topics: [toEventSelector("AuthorizationUsed(address,bytes32)"), padHex(auth.from.toLowerCase()),
+            requestedTx === actualTx ? auth.nonce : `0x${"0".repeat(64)}`],
+          data: "0x",
+        }, {
           address: ASSET,
           topics: [toEventSelector("Transfer(address,address,uint256)"), padHex(auth.from.toLowerCase()), padHex(auth.to.toLowerCase())],
           data: encodeAbiParameters([{ type: "uint256" }], [BigInt(auth.value)]),
-        }, {
-          address: ASSET, topics: [toEventSelector("AuthorizationUsed(address,bytes32)"), padHex(auth.from.toLowerCase()), auth.nonce],
-          data: "0x",
         }],
       },
     });
   }}));
   t.after(() => mf.dispose());
   const headers = { authorization: `Bearer ${TEST_TOKEN}`, "content-type": "application/json" };
-  const send = (graph = GRAPH, payment) => mf.dispatchFetch(`${base}/v1/dependency-graph-review`, {
+  const send = (graph = GRAPH, payment, recoveryTx) => mf.dispatchFetch(`${base}/v1/dependency-graph-review`, {
     method: "POST", body: JSON.stringify(graph), headers: {
       ...headers, ...(payment ? { "payment-signature": payment } : {}),
+      ...(recoveryTx ? { "payment-recovery-transaction": recoveryTx } : {}),
     },
   });
   const mcp = (method, params) => mf.dispatchFetch(`${base}/mcp`, {
@@ -98,6 +104,9 @@ test("Worker validates the graph, verifies, analyzes, settles, checks receipt, a
   const signedProof = await sign(quote, key);
   const signature = encodePaymentSignatureHeader(signedProof);
   assert.ok(parseProof(signature, RECIPIENT));
+  assert.equal((await send(GRAPH, signature, tx)).status, 409);
+  assert.equal((await send(GRAPH, signature, "bad-hash")).status, 400);
+  assert.equal(verified, 0);
   failOsv = true;
   assert.equal((await send(GRAPH, signature)).status, 502);
   assert.equal(settles, 0);
@@ -125,6 +134,12 @@ test("Worker validates the graph, verifies, analyzes, settles, checks receipt, a
   const second = encodePaymentSignatureHeader(await sign(quote, key));
   assert.equal((await send(GRAPH, second)).status, 503);
   assert.equal((await send(GRAPH, second)).status, 409);
+  assert.equal((await send(GRAPH, second, wrongTx)).status, 409);
+  const recovered = await send(GRAPH, second, secondTx);
+  assert.equal(recovered.status, 200);
+  assert.equal(decodePaymentResponseHeader(recovered.headers.get("payment-response")).transaction, secondTx);
+  assert.deepEqual((await recovered.json()).findings, report.findings);
+  assert.equal((await send(GRAPH, second)).status, 200);
   assert.equal(settles, 2);
 
   const mcpReplay = await (await mcp("tools/call", {
