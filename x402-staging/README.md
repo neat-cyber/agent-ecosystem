@@ -31,3 +31,14 @@ The JSON payload must describe a resolved graph, with up to 10 roots, 40 nodes, 
 The HTTP route returns a v2 `PAYMENT-REQUIRED` header with HTTP 402; the MCP result carries `_meta["x402/error"]`. Retry with the signed `PAYMENT-SIGNATURE` header or MCP `_meta["x402/payment"]`. On success, the receipt and analysis can be read again using the same proof and exact graph. Keep proofs private. The test ledger accepts at most ten payment claims and stores results and receipts without raw keys or signed proofs. If settlement is uncertain, reconcile it via the Base Sepolia USDC nonce and transfer logs before considering any fresh payment. A submitted transaction with a temporarily unavailable receipt can be retried with the same proof without submitting it again.
 
 This staging application fixes the network, currency, amount, and facilitator in source. Production operation requires separate approval and production-specific operational controls.
+
+## Prepare a graph from an npm lockfile
+
+Run these commands from an npm project with a valid lockfile. The first command must succeed. The second reads its local output and accepts one or more direct dependency names. It prints only names, resolved versions, and opaque graph IDs. Review the result and share only public package metadata. The helper skips network access and does not invoke installation or lifecycle commands.
+
+```sh
+npm ls --all --long --package-lock-only --json > npm-tree.local.json
+node /path/to/x402-staging/scripts/npm-graph.mjs async < npm-tree.local.json > radar-graph.json
+```
+
+Keep the intermediate npm tree local. It can contain paths or registry URLs. The graph covers the selected branches as represented by npm, including optional or development dependencies that appear in that tree. Choose a small branch for the pilot. An unresolved, private-registry, or oversized branch is rejected instead of being presented as an exhaustive review.
