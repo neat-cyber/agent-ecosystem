@@ -1,0 +1,14 @@
+# Agent Ecosystem — agent-readable index
+
+Remote MCP services for coding agents and research agents.
+Central catalog: https://agent-ecosystem.saromy-export.workers.dev/catalog.json
+Status and metrics: https://agent-ecosystem.saromy-export.workers.dev/metrics
+
+Guardian contract audit: https://agent-guardian.saromy-export.workers.dev/mcp
+Repair tool failure diagnosis: https://agent-repair.saromy-export.workers.dev/mcp
+Signals French BOAMP tender search: https://agent-signals.saromy-export.workers.dev/mcp
+Dependency Radar package advisory preflight and release_gate: https://agent-dependency-radar.saromy-export.workers.dev/mcp
+
+Clients must deliberately connect via MCP Streamable HTTP and choose a relevant tool from tools/list. There is no auto-install, auto-redirect, or billing. No paid transactions are enabled.
+
+Read first: README.md, docs/QUICKSTART.md, docs/TOOLS.md, docs/PRIVACY.md.
