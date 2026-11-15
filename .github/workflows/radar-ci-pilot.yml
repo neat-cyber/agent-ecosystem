@@ -1,0 +1,26 @@
+name: Radar CI pilot
+on:
+  pull_request:
+    branches: [staging/radar-ci-pilot]
+    paths: [x402-staging/ci-smoke/package-lock.json]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Review approved npm dependency with Radar
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git show "$BASE_SHA:x402-staging/ci-smoke/package-lock.json" > "$RUNNER_TEMP/radar-base.json"
+          git show "$BASE_SHA:x402-staging/scripts/radar-pr-check.mjs" > "$RUNNER_TEMP/radar-pr-check.mjs"
+          GITHUB_STEP_SUMMARY="$RUNNER_TEMP/radar-result.md" node "$RUNNER_TEMP/radar-pr-check.mjs" "$RUNNER_TEMP/radar-base.json" x402-staging/ci-smoke/package-lock.json lodash --internal
+          grep -F 'review_known_advisories' "$RUNNER_TEMP/radar-result.md"
+          grep -F 'lodash@4.17.20' "$RUNNER_TEMP/radar-result.md"
+          cat "$RUNNER_TEMP/radar-result.md" >> "$GITHUB_STEP_SUMMARY"
