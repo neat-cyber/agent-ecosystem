@@ -1,0 +1,13 @@
+{
+  "name": "oseille-x402-sepolia-staging",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-15",
+  "workers_dev": true,
+  "vars": {
+    "X402_NETWORK": "base-sepolia",
+    "X402_PRICE_USD": "0.05",
+    "X402_ENABLED": "false",
+    "X402_RECIPIENT": "",
+    "X402_FACILITATOR_URL": "https://x402.org/facilitator"
+  }
+}
