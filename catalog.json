@@ -1,0 +1,62 @@
+{
+  "name": "Agent Ecosystem",
+  "kind": "static-public-documentation-snapshot",
+  "checked_on": "2026-11-15",
+  "live_catalog": "https://agent-ecosystem.saromy-export.workers.dev/catalog.json",
+  "live_metrics": "https://agent-ecosystem.saromy-export.workers.dev/metrics",
+  "pricing": "free-beta-no-billing",
+  "services": [
+    {
+      "id": "guardian",
+      "name": "Agent Guardian",
+      "version": "0.8.0",
+      "mcp": "https://agent-guardian.saromy-export.workers.dev/mcp",
+      "registry": "io.github.neat-cyber/agent-guardian",
+      "tools": [
+        "audit_mcp_contracts",
+        "ecosystem_catalog",
+        "check_demo",
+        "check_live",
+        "live_history",
+        "demo_history"
+      ]
+    },
+    {
+      "id": "repair",
+      "name": "Agent Repair",
+      "version": "0.2.0",
+      "mcp": "https://agent-repair.saromy-export.workers.dev/mcp",
+      "registry": "io.github.neat-cyber/agent-repair",
+      "tools": [
+        "diagnose_tool_failure",
+        "validate_tool_arguments",
+        "ecosystem_catalog"
+      ]
+    },
+    {
+      "id": "signals",
+      "name": "Agent Signals",
+      "version": "0.1.0",
+      "mcp": "https://agent-signals.saromy-export.workers.dev/mcp",
+      "registry": "io.github.neat-cyber/agent-signals",
+      "tools": [
+        "search_public_tenders",
+        "data_sources",
+        "ecosystem_catalog"
+      ]
+    },
+    {
+      "id": "radar",
+      "name": "Agent Dependency Radar",
+      "version": "0.2.0",
+      "mcp": "https://agent-dependency-radar.saromy-export.workers.dev/mcp",
+      "registry": "io.github.neat-cyber/agent-dependency-radar",
+      "tools": [
+        "dependency_preflight",
+        "release_gate",
+        "ecosystem_catalog",
+        "radar_methodology"
+      ]
+    }
+  ]
+}
