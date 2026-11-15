@@ -3,11 +3,12 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-15",
   "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true, "traces": { "enabled": true, "head_sampling_rate": 0.01 } },
+  "durable_objects": { "bindings": [{ "name": "PAYMENTS", "class_name": "TestnetPayments" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TestnetPayments"] }],
   "vars": {
-    "X402_NETWORK": "base-sepolia",
-    "X402_PRICE_USD": "0.05",
     "X402_ENABLED": "false",
-    "X402_RECIPIENT": "",
-    "X402_FACILITATOR_URL": "https://x402.org/facilitator"
+    "X402_RECIPIENT": ""
   }
 }
