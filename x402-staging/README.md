@@ -48,3 +48,9 @@ Keep the intermediate npm tree local. It can contain paths or registry URLs. The
 If the facilitator connection failed after submission and you have the confirmed transaction hash, retry the HTTP request with the same graph and original `PAYMENT-SIGNATURE`. Include the hash as `Payment-Recovery-Transaction`. The Worker checks Base Sepolia for the matching USDC authorization and transfer. A valid receipt returns the stored report without resubmitting payment. A recovery request never starts a new settlement.
 
 Keep the original signature private. If the hash is unknown, find the corresponding authorization and transfer on Base Sepolia or obtain it from the facilitator before retrying recovery. This HTTP recovery path does not automatically discover a missing hash.
+
+## Read-only CDP credentials preflight
+
+On an operator machine, provide `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET` through a private environment, then run `node scripts/check-cdp.mjs`. For example, Node 22+ can load an owner-only environment file outside the checkout with `node --env-file=/private/path/cdp.env scripts/check-cdp.mjs`. The check only makes a signed GET to Coinbase's x402 supported-kinds endpoint. It does not call verify or settle and does not print the credential or the token. A successful check confirms authenticated capability discovery, not that a real payment settles or that production is enabled.
+
+Keep the key out of Git and logs. Do not put production credentials into the existing Sepolia Worker. When the separate disabled production Worker is ready and the account's costs have been checked, store the production credentials in that Worker's secret bindings.
