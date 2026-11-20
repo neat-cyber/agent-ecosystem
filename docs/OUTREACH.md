@@ -29,3 +29,11 @@ The publisher's signed checks passed 41 service checks and four further example 
 The 14-day observation window begins with the first voluntary independent task. We seek three independent teams trying Dependency Radar, two returning for a later decision, and one describing in writing a concrete advanced analysis they would pay 0.05 USDC for. A pilot report can supply a redacted result, a time and a decision. The operator reviews attribution evidence before classifying external use.
 
 The existing daily private report checks submission replies, pilot feedback and subsequent usage. Follow-up messages are reviewed individually. Public tools remain available without a payment. Premium testnet validation and any future mainnet decision are recorded separately in the technical audit.
+
+## Verified pilot setup, 20 November 2026
+
+The [five-minute pilot guide](https://agent-ecosystem.saromy-export.workers.dev/pilot), [optional invitation request](https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-request.yml), local lockfile-selection client and [business recurrence measurements](https://agent-ecosystem.saromy-export.workers.dev/adoption.json) are live. Radar supports reviewed, expiring attribution tokens; anonymous calls remain unknown. No production participant has been enrolled.
+
+[Public recruitment invitation #2](https://github.com/neat-cyber/agent-ecosystem/issues/2) was opened by the publisher at 16:16:34 UTC. This invitation is outreach, not an independent pilot report. [Three targeted drafts](OUTREACH-DRAFTS.md) are ready for channel/content review and have not been sent. Cline's explicit submission checks still require an actual Cline setup test and logo; no Cline submission is claimed.
+
+[Release evidence and rollback](PILOT-RELEASE.md) records local tests, private staging attribution checks, signed production checks, active versions and post-deployment results. The existing daily private report now reviews pilot requests and recurrence without automatic token issuance or outreach.
