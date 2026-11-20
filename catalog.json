@@ -1,17 +1,17 @@
 {
   "name": "Agent Ecosystem",
   "kind": "static-public-documentation-snapshot",
-  "checked_on": "2026-11-15",
+  "checked_on": "2026-11-20",
   "live_catalog": "https://agent-ecosystem.saromy-export.workers.dev/catalog.json",
   "live_metrics": "https://agent-ecosystem.saromy-export.workers.dev/metrics",
   "pricing": "free-beta-no-billing",
+  "examples_url": "https://agent-ecosystem.saromy-export.workers.dev/examples.json",
   "services": [
     {
       "id": "guardian",
       "name": "Agent Guardian",
       "version": "0.8.0",
       "mcp": "https://agent-guardian.saromy-export.workers.dev/mcp",
-      "registry": "io.github.neat-cyber/agent-guardian",
       "tools": [
         "audit_mcp_contracts",
         "ecosystem_catalog",
@@ -19,44 +19,53 @@
         "check_live",
         "live_history",
         "demo_history"
-      ]
+      ],
+      "purpose": "MCP contract and compatibility checks",
+      "status": "active",
+      "paid": false
     },
     {
       "id": "repair",
       "name": "Agent Repair",
       "version": "0.2.0",
       "mcp": "https://agent-repair.saromy-export.workers.dev/mcp",
-      "registry": "io.github.neat-cyber/agent-repair",
       "tools": [
         "diagnose_tool_failure",
         "validate_tool_arguments",
         "ecosystem_catalog"
-      ]
+      ],
+      "purpose": "Offline tool failure diagnostics and JSON Schema argument subset checks",
+      "status": "active",
+      "paid": false
     },
     {
       "id": "signals",
       "name": "Agent Signals",
       "version": "0.1.0",
       "mcp": "https://agent-signals.saromy-export.workers.dev/mcp",
-      "registry": "io.github.neat-cyber/agent-signals",
       "tools": [
         "search_public_tenders",
         "data_sources",
         "ecosystem_catalog"
-      ]
+      ],
+      "purpose": "Recent French public procurement notices from DILA BOAMP Open Data",
+      "status": "beta",
+      "paid": false
     },
     {
       "id": "radar",
       "name": "Agent Dependency Radar",
       "version": "0.2.0",
       "mcp": "https://agent-dependency-radar.saromy-export.workers.dev/mcp",
-      "registry": "io.github.neat-cyber/agent-dependency-radar",
       "tools": [
         "dependency_preflight",
         "release_gate",
         "ecosystem_catalog",
         "radar_methodology"
-      ]
+      ],
+      "purpose": "Validated npm/PyPI version preflight and batch Release Gate (1-3 direct packages)",
+      "status": "beta",
+      "paid": false
     }
   ]
 }

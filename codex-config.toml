@@ -1,0 +1,11 @@
+[mcp_servers.guardian]
+url = "https://agent-guardian.saromy-export.workers.dev/mcp"
+
+[mcp_servers.repair]
+url = "https://agent-repair.saromy-export.workers.dev/mcp"
+
+[mcp_servers.signals]
+url = "https://agent-signals.saromy-export.workers.dev/mcp"
+
+[mcp_servers.radar]
+url = "https://agent-dependency-radar.saromy-export.workers.dev/mcp"

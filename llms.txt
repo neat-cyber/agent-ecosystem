@@ -1,14 +1,24 @@
-# Agent Ecosystem — agent-readable index
+# Agent Ecosystem
+Public, hosted MCP services maintained by neat-cyber.
+Catalog https://agent-ecosystem.saromy-export.workers.dev/catalog.json
+Examples https://agent-ecosystem.saromy-export.workers.dev/examples.json
+Cursor config https://agent-ecosystem.saromy-export.workers.dev/mcp-config.json
+Codex config https://agent-ecosystem.saromy-export.workers.dev/codex-config.toml
+Agent Guardian https://agent-guardian.saromy-export.workers.dev/mcp
+Use audit_mcp_contracts before upgrading an mcp server. Static schema checks. Review findings before changing a client.
 
-Remote MCP services for coding agents and research agents.
-Central catalog: https://agent-ecosystem.saromy-export.workers.dev/catalog.json
-Status and metrics: https://agent-ecosystem.saromy-export.workers.dev/metrics
+Agent Repair https://agent-repair.saromy-export.workers.dev/mcp
+Use diagnose_tool_failure when a tool call fails. Diagnostic advice. Retrying remains the client’s decision.
 
-Guardian contract audit: https://agent-guardian.saromy-export.workers.dev/mcp
-Repair tool failure diagnosis: https://agent-repair.saromy-export.workers.dev/mcp
-Signals French BOAMP tender search: https://agent-signals.saromy-export.workers.dev/mcp
-Dependency Radar package advisory preflight and release_gate: https://agent-dependency-radar.saromy-export.workers.dev/mcp
+Agent Signals https://agent-signals.saromy-export.workers.dev/mcp
+Use search_public_tenders when looking for french public contracts. BOAMP coverage. Global beta limit of 30 searches per rolling 24 hours.
 
-Clients must deliberately connect via MCP Streamable HTTP and choose a relevant tool from tools/list. There is no auto-install, auto-redirect, or billing. No paid transactions are enabled.
-
-Read first: README.md, docs/QUICKSTART.md, docs/TOOLS.md, docs/PRIVACY.md.
+Agent Dependency Radar https://agent-dependency-radar.saromy-export.workers.dev/mcp
+Use release_gate before installing or releasing dependencies. Up to three exact versions per call. Supply dependencies explicitly. Review compatibility before upgrading.
+Use MCP Streamable HTTP. Initialize, discover tools/list, then call tools/call using the returned schema.
+These public tools are free beta services. Operator approval governs external connections.
+The premium experiment is on a separate private Base Sepolia staging service.
+Only share public identifiers and redacted tool errors or schemas.
+Pilot feedback https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-feedback.yml
+Recorded MCP usage https://agent-ecosystem.saromy-export.workers.dev/metrics
+Tests and unattributed calls are distinct from verified external adoption.

@@ -1,0 +1,113 @@
+{
+  "guardian": {
+    "service": "Agent Guardian",
+    "endpoint": "https://agent-guardian.saromy-export.workers.dev/mcp",
+    "when_to_use": "Before upgrading an MCP server",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/call",
+      "params": {
+        "name": "audit_mcp_contracts",
+        "arguments": {
+          "tools": [
+            {
+              "name": "search",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          ],
+          "previous_tools": [
+            {
+              "name": "search",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": "likely_breaking_changes is greater than zero because query became required.",
+    "limits": "Static schema checks. Review findings before changing a client."
+  },
+  "repair": {
+    "service": "Agent Repair",
+    "endpoint": "https://agent-repair.saromy-export.workers.dev/mcp",
+    "when_to_use": "When a tool call fails",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/call",
+      "params": {
+        "name": "diagnose_tool_failure",
+        "arguments": {
+          "http_status": 429,
+          "error_message": "Rate limit exceeded",
+          "idempotent": true
+        }
+      }
+    },
+    "expected": "category is rate_limit_or_quota.",
+    "limits": "Diagnostic advice. Retrying remains the client’s decision."
+  },
+  "signals": {
+    "service": "Agent Signals",
+    "endpoint": "https://agent-signals.saromy-export.workers.dev/mcp",
+    "when_to_use": "When looking for French public contracts",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/call",
+      "params": {
+        "name": "search_public_tenders",
+        "arguments": {
+          "keyword": "maintenance",
+          "days_back": 30,
+          "max_results": 3,
+          "strict_match": true
+        }
+      }
+    },
+    "expected": "results contains matching notices when the source has them. An empty array is possible.",
+    "limits": "BOAMP coverage. Global beta limit of 30 searches per rolling 24 hours."
+  },
+  "radar": {
+    "service": "Agent Dependency Radar",
+    "endpoint": "https://agent-dependency-radar.saromy-export.workers.dev/mcp",
+    "when_to_use": "Before installing or releasing dependencies",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/call",
+      "params": {
+        "name": "release_gate",
+        "arguments": {
+          "packages": [
+            {
+              "ecosystem": "npm",
+              "package_name": "lodash",
+              "version": "4.17.15"
+            }
+          ]
+        }
+      }
+    },
+    "expected": "evaluated is 1. Read decision, advisory records and source completeness.",
+    "limits": "Up to three exact versions per call. Supply dependencies explicitly. Review compatibility before upgrading."
+  }
+}

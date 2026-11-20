@@ -1,61 +1,82 @@
-# Agent Ecosystem — Remote MCP Tools for AI Agents
+# Agent Ecosystem
 
-**Four free, hosted MCP services for developers and AI agents:** validate tool contracts, diagnose failures, inspect software dependency advisories, and search French public procurement notices.
+Four free hosted MCP services for coding agents and research workflows. Connect an HTTPS endpoint, discover its tools, and run a concrete task.
 
-> **Status:** experimental public services, running on Cloudflare Workers. No customer subscriptions, payment collection, or verified independent paid users. This repository contains **documentation and public connection details only** — not the private implementation.
+[Open the public hub](https://agent-ecosystem.saromy-export.workers.dev/) · [Download Cursor configuration](mcp-config.json) · [Download Codex configuration](codex-config.toml) · [Read the HTTP quickstart](docs/QUICKSTART.md)
 
-## Start here
+| Your next task | Service | Main tool | What you get |
+| --- | --- | --- | --- |
+| Review a dependency before release | Agent Dependency Radar | `release_gate` | Registry-verified versions, OSV advisory records and a review decision for up to three pinned npm/PyPI releases. |
+| Check a changed tool contract | Agent Guardian | `audit_mcp_contracts` | Schema findings, a fingerprint and potentially breaking changes against a previous descriptor. |
+| Understand a failed tool call | Agent Repair | `diagnose_tool_failure` | An error category and bounded next steps based on HTTP status or a redacted message. |
+| Find French public tenders | Agent Signals | `search_public_tenders` | Matching BOAMP notices with buyer, dates and official source references. |
 
-**Product hub:** https://agent-ecosystem.saromy-export.workers.dev/
+## Connect
 
-**Machine-readable service catalog:** https://agent-ecosystem.saromy-export.workers.dev/catalog.json
+All four servers use MCP Streamable HTTP. The free beta tools require no account or API key. Approve the external connection in your MCP client.
 
-**Real usage / payment status:** https://agent-ecosystem.saromy-export.workers.dev/metrics
+```json
+{
+  "mcpServers": {
+    "guardian": {"url": "https://agent-guardian.saromy-export.workers.dev/mcp"},
+    "repair": {"url": "https://agent-repair.saromy-export.workers.dev/mcp"},
+    "signals": {"url": "https://agent-signals.saromy-export.workers.dev/mcp"},
+    "radar": {"url": "https://agent-dependency-radar.saromy-export.workers.dev/mcp"}
+  }
+}
+```
 
-| Service | Remote MCP endpoint | Agent use case |
-| --- | --- | --- |
-| **Agent Guardian** | `https://agent-guardian.saromy-export.workers.dev/mcp` | Audit supplied MCP `tools/list` contracts and flag possible breaking schema changes. Owned-target health demos are not third-party uptime monitoring. |
-| **Agent Repair** | `https://agent-repair.saromy-export.workers.dev/mcp` | Classify common HTTP/MCP failures and check argument objects against a **limited** JSON Schema subset. |
-| **Agent Signals** | `https://agent-signals.saromy-export.workers.dev/mcp` | Search public French BOAMP procurement notices with source references; incomplete public-data beta, not a complete procurement search. |
-| **Agent Dependency Radar** | `https://agent-dependency-radar.saromy-export.workers.dev/mcp` | Check exact npm/PyPI package versions against official registries and known OSV advisories. `release_gate` checks up to three direct dependencies per call. |
+This JSON uses Cursor's configuration shape. Codex users can copy the entries in [codex-config.toml](codex-config.toml). Other clients may use a different configuration shape. Call `tools/list` after connecting to obtain the current input schemas.
 
-### A coding agent can use these tools to
+## Try a task
 
-- Check whether an updated MCP tool schema introduced a new required argument — **Guardian**.
-- Explain an HTTP `429` or an invalid tool-call argument — **Repair**.
-- Compare known OSV advisories for a pinned package versus the latest published version — **Dependency Radar**.
-- Search recent French public tender notices by keywords — **Signals**.
+For a dependency review, call Agent Dependency Radar with this request.
 
-Each service can suggest other relevant services through `ecosystem_catalog`; suggestions are optional, never forced, and do **not** automatically invoke a paid operation.
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "release_gate",
+    "arguments": {
+      "packages": [
+        {"ecosystem": "npm", "package_name": "lodash", "version": "4.17.15"}
+      ]
+    }
+  }
+}
+```
 
-## Connect from an MCP-compatible client
+Read `decision`, `evaluated`, the advisory records and source completeness. A result marked `incomplete_needs_review` needs follow-up. OSV coverage and software compatibility require review before any upgrade. Each supplied package must have an exact version.
 
-All four endpoints use remote **MCP Streamable HTTP**. Configure your client with one of the HTTPS `/mcp` URLs above; call `tools/list` to see the actual, current schemas. Example JSON-RPC requests are in [Quickstart](docs/QUICKSTART.md).
+The [examples.json](examples.json) file provides one task per service, its endpoint, request, expected response fields and limits. The public hub includes the same examples and a copy button.
 
-No authentication token or subscription is required for the currently free beta tools. **Do not send API keys, passwords, private repository content, or sensitive errors.** Some tools use public data and enforce conservative limits.
+## Join the Dependency Radar pilot
 
-## Official MCP Registry
+We are looking for three independent teams to try a dependency review on a real release decision, with two teams returning for a later decision. We also want to learn whether an advanced analysis would be worth 0.05 USDC per call for a specific use case.
 
-Our independently named listings are published in the official registry:
+Use the free tools first, then [submit redacted feedback](https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-feedback.yml). Share the finding and the decision it helped you make. Public feedback is optional. The advanced payment flow is an experiment on a separate private Base Sepolia service.
 
-- [Agent Guardian](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.neat-cyber%2Fagent-guardian)
-- [Agent Repair](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.neat-cyber%2Fagent-repair)
-- [Agent Signals](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.neat-cyber%2Fagent-signals)
-- [Agent Dependency Radar](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.neat-cyber%2Fagent-dependency-radar)
+## Limits and data handling
 
-Registry presence is **not** proof of active external users, autonomous agent discovery, or commercial demand.
+- Dependency Radar accepts up to three pinned package versions per `release_gate` call, uses a cache and has a shared budget of 120 uncached checks per UTC day. Supply each dependency to be checked explicitly.
+- Signals searches the DILA BOAMP source and has a shared limit of 30 searches per rolling 24 hours. Results can be empty or incomplete.
+- Guardian checks a schema subset. Its health demonstrations concern a project-owned target.
+- Repair provides deterministic diagnostics and a constrained JSON Schema argument check.
+- Send public identifiers and redacted descriptors or errors. Keep credentials and private source code in your own systems.
 
-## Documentation
+Recorded MCP events contain service, tool, outcome, time, duration, version and origin classification. [Privacy details](docs/PRIVACY.md) describe the collection boundaries.
 
-- [Quickstart and example MCP requests](docs/QUICKSTART.md)
-- [Tools, scope, limitations, and sources](docs/TOOLS.md)
-- [Privacy and operational boundaries](docs/PRIVACY.md)
-- [Free directory submission checklist](docs/DIRECTORIES.md)
-- [Responsible vulnerability reporting](SECURITY.md)
-- [Machine-readable static directory snapshot](catalog.json) and [agent-readable summary](llms.txt)
+## Discovery and evidence
 
-## Why this exists
+- [Live catalog](https://agent-ecosystem.saromy-export.workers.dev/catalog.json)
+- [Agent-readable instructions](https://agent-ecosystem.saromy-export.workers.dev/llms.txt)
+- [Measured usage](https://agent-ecosystem.saromy-export.workers.dev/metrics), with authenticated internal tests, declared tests, probes, unknown calls and verified external calls
+- [Glama listings](https://glama.ai/mcp/connectors?query=io.github.neat-cyber)
+- [Tools and source descriptions](docs/TOOLS.md)
+- [Report an operational problem](https://github.com/neat-cyber/agent-ecosystem/issues)
 
-The goal is to provide **small, reliable, task-specific capabilities** that autonomous agents can discover and reuse. Any future monetization would be clearly advertised as an *optional, metered, pay-per-call* tool with user/operator authorization; **billing is currently disabled**. No earnings or adoption are guaranteed.
+An anonymous successful call establishes that an operation ran. Independent consumers and recurring use require additional attribution evidence. Public directory submissions are tracked as outreach.
 
-*Résumé en français : quatre outils MCP publics et gratuits, utilisables par des agents IA. Le code des Workers reste privé. Pas d'abonnement ni de paiement activé actuellement.*
+This repository contains public documentation, client configuration and the public hub source. The four hosted services are experimental and maintained by neat-cyber.

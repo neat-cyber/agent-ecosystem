@@ -1,51 +1,69 @@
-# Quickstart: use a remote MCP tool
+# Run a useful MCP check
 
-## 1. Choose the endpoint
+## Connect an endpoint
 
-For example, Agent Dependency Radar:
+Choose the service that fits your task. Download the [Cursor JSON](../mcp-config.json) or [Codex TOML](../codex-config.toml), or add one endpoint manually in your MCP client.
 
-https://agent-dependency-radar.saromy-export.workers.dev/mcp
+| Service | Endpoint |
+| --- | --- |
+| Agent Guardian | `https://agent-guardian.saromy-export.workers.dev/mcp` |
+| Agent Repair | `https://agent-repair.saromy-export.workers.dev/mcp` |
+| Agent Signals | `https://agent-signals.saromy-export.workers.dev/mcp` |
+| Agent Dependency Radar | `https://agent-dependency-radar.saromy-export.workers.dev/mcp` |
 
-Your MCP client must support remote **Streamable HTTP**. Some clients require manual approval to add an external tool server. Registration in an MCP directory does not automatically authorize a client to connect.
+The transport is Streamable HTTP. The public beta tools are free and accept requests without a token. Approve the external connection in your client and discover the current schemas through `tools/list`.
 
-## 2. Discover available tools
+## Try Dependency Radar with curl
 
-Example using curl (this example lists tools but does not increment the tool-call usage counter):
-
-```bash
-curl --fail-with-body -sS \
-  'https://agent-dependency-radar.saromy-export.workers.dev/mcp' \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
-```
-
-## 3. Run a useful check
-
-The example checks two **direct** package versions against public OSV advisories. It is not a security certification and does not include transitive dependencies.
+Initialize the connection.
 
 ```bash
 curl --fail-with-body -sS \
   'https://agent-dependency-radar.saromy-export.workers.dev/mcp' \
   -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"release_gate","arguments":{"packages":[{"ecosystem":"npm","package_name":"lodash","version":"4.17.15"},{"ecosystem":"PyPI","package_name":"requests","version":"2.19.1"}]}}}'
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"dependency-review","version":"1.0"}}}'
 ```
 
-The returned structured response has fields such as decision, evaluated, results, advisory counts, and source information. Always inspect the **actual** tool schema with tools/list, since APIs may evolve.
+Discover the current tools.
 
-### Typical decisions
+```bash
+curl --fail-with-body -sS \
+  'https://agent-dependency-radar.saromy-export.workers.dev/mcp' \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
+```
 
-- `review_known_advisories`: The submitted packages have known advisory records and need review.
-- `no_known_direct_advisories_found`: No known direct-package OSV advisories were returned at the time of the check. **This does not mean safe**.
-- `incomplete_needs_review`: At least one requested package could not be completely evaluated; do not infer that it is safe.
+Check a pinned dependency before deciding on an upgrade.
 
-## Other MCP endpoints
+```bash
+curl --fail-with-body -sS \
+  'https://agent-dependency-radar.saromy-export.workers.dev/mcp' \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"release_gate","arguments":{"packages":[{"ecosystem":"npm","package_name":"lodash","version":"4.17.15"}]}}}'
+```
 
-- Guardian: https://agent-guardian.saromy-export.workers.dev/mcp
-- Repair: https://agent-repair.saromy-export.workers.dev/mcp
-- Signals: https://agent-signals.saromy-export.workers.dev/mcp
+The result is in `result.structuredContent`. Check `isError` as well as HTTP status because an MCP tool error can arrive in an HTTP 200 response.
 
-## Client safety
+| Returned decision | Next step |
+| --- | --- |
+| `review_known_advisories` | Read the advisory records and assess the affected versions. |
+| `no_known_direct_advisories_found` | Continue compatibility testing and review the coverage limitations. |
+| `incomplete_needs_review` | Inspect the unavailable source or invalid package version and repeat only when appropriate. |
 
-Connect to services only when approved by the tool operator. Never submit credentials, private source code, or regulated personal data. No paid call is available or required today.
+## Choose another concrete task
+
+The machine-readable [examples.json](../examples.json) contains one reproducible request for each service, with expected response fields.
+
+- Guardian compares the same tool descriptor before and after adding a required argument.
+- Repair classifies a supplied HTTP 429 and provides bounded retry advice.
+- Signals searches recent BOAMP notices containing `maintenance` and supplies provenance.
+- Radar evaluates the pinned package and returns source completeness.
+
+Signals can return an empty results array. Quotas are shared across the free beta. Check the service response before retrying.
+
+## Report a result
+
+The [pilot feedback form](https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-feedback.yml) asks which decision the check helped you make, whether you returned for another task, and what would justify an advanced paid analysis. Redact private identifiers, credentials and source code before publishing.

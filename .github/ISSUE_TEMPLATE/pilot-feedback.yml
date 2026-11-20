@@ -1,0 +1,58 @@
+name: Pilot feedback
+description: Share a redacted result from a real task using Agent Ecosystem.
+title: "[Pilot feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. Share public package versions and redacted findings.
+        Feedback is voluntary and the current tools are free beta services.
+  - type: dropdown
+    id: service
+    attributes:
+      label: Which service did you use?
+      options:
+        - Agent Dependency Radar
+        - Agent Guardian
+        - Agent Repair
+        - Agent Signals
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: What task were you trying to complete?
+      description: Describe the release decision, tool failure or public-data search.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What result did the tool return, and what did you decide?
+      description: Include public versions, a UTC time and a redacted result if available.
+    validations:
+      required: true
+  - type: dropdown
+    id: repeat
+    attributes:
+      label: Have you used the service for a later decision?
+      options:
+        - First real task
+        - Returned for another real task
+        - Integration test only
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: What would make an advanced analysis worth 0.05 USDC to you?
+      description: Optional. Describe a use case, missing evidence or a maximum acceptable price.
+  - type: checkboxes
+    id: independence
+    attributes:
+      label: Optional attribution
+      options:
+        - label: I am independent of the Agent Ecosystem project and chose to try the service.
+          required: false
+        - label: I used an AI agent or an automated workflow for the task described above.
+          required: false

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "guardian": {
+      "url": "https://agent-guardian.saromy-export.workers.dev/mcp"
+    },
+    "repair": {
+      "url": "https://agent-repair.saromy-export.workers.dev/mcp"
+    },
+    "signals": {
+      "url": "https://agent-signals.saromy-export.workers.dev/mcp"
+    },
+    "radar": {
+      "url": "https://agent-dependency-radar.saromy-export.workers.dev/mcp"
+    }
+  }
+}
