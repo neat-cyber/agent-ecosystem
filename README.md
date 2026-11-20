@@ -54,6 +54,10 @@ The [examples.json](examples.json) file provides one task per service, its endpo
 
 ## Join the Dependency Radar pilot
 
+[Five-minute real-project guide](https://agent-ecosystem.saromy-export.workers.dev/pilot) · [Request a verified invitation](https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-request.yml) · [Local lockfile-selection client](scripts/radar-pilot.mjs) · [Adoption and recurrence](https://agent-ecosystem.saromy-export.workers.dev/adoption.json)
+
+The optional local client selects up to three direct pinned dependencies from an npm lockfile without uploading the lockfile. After review, pilot participants can use a private expiring token to link later calls to one opaque team ID. Anonymous use remains free and unattributed. See [pilot details](docs/PILOT.md).
+
 We are looking for three independent teams to try a dependency review on a real release decision, with two teams returning for a later decision. We also want to learn whether an advanced analysis would be worth 0.05 USDC per call for a specific use case.
 
 Use the free tools first, then [submit redacted feedback](https://github.com/neat-cyber/agent-ecosystem/issues/new?template=pilot-feedback.yml). Share the finding and the decision it helped you make. Public feedback is optional. The advanced payment flow is an experiment on a separate private Base Sepolia service.

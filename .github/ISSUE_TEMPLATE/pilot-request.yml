@@ -1,0 +1,47 @@
+name: Join the free Dependency Radar pilot
+description: Try a real dependency decision and return with a second task.
+title: "[Pilot request] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This request is public. Never post a pilot token, email, private code or customer information.
+        Free tools also work without enrolling. Enrollment is voluntary; it lets us match repeated calls to an opaque team identifier.
+        A maintainer reviews independence and agrees on an existing private channel before issuing a 30-day attribution token.
+        No payment, review or endorsement is required. See docs/PILOT.md and docs/PRIVACY.md.
+  - type: textarea
+    id: task
+    attributes:
+      label: What dependency decision are you making?
+      description: Describe a public npm or PyPI dependency and the result that would be useful.
+    validations:
+      required: true
+  - type: input
+    id: project
+    attributes:
+      label: Optional public project or workflow link
+      description: Helps verify independence. Private projects can describe their workflow without identifying clients.
+  - type: dropdown
+    id: client
+    attributes:
+      label: How will you run the check?
+      options:
+        - MCP client or AI agent
+        - The local radar-pilot.mjs client
+        - Another automated workflow
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Voluntary pilot
+      options:
+        - label: I am independent of the Agent Ecosystem project and want to try a real task.
+          required: true
+        - label: I understand that an attribution token connects my calls to one opaque team identifier for pilot measurement.
+          required: true
+  - type: textarea
+    id: follow_up
+    attributes:
+      label: When could you return for another dependency decision?
+      description: Optional. A later real task helps assess usefulness. No automatic messages will be sent.

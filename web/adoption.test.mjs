@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+import {adoption} from './adoption.mjs';
+test('excludes unknowns, internal tests and catalogues from independent recurrence, and reports immature cohorts',async()=>{
+ const sqlite=new DatabaseSync(':memory:');
+ sqlite.exec(readFileSync(new URL('../scripts/pilot-test-schema.sql',import.meta.url),'utf8'));
+ sqlite.exec('CREATE VIEW mcp_reporting_v4 AS SELECT * FROM mcp_events_v4_detail');
+ const at=days=>new Date(Date.now()-days*86400000).toISOString();let n=0;
+ const add=(consumer,days,origin='verified_external',tool='release_gate')=>sqlite.prepare('INSERT INTO mcp_events_v4_detail(service,event_type,tool,outcome,duration_ms,worker_version,correlation_id,origin_class,consumer_id,payment_state,recorded_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run('agent-dependency-radar','mcp.tool_call',tool,'ok',1,'fixture',String(n++),origin,consumer,'not_applicable',at(days));
+ add('first',10);add('first',1);add('new',1);add('new',0);add(null,0,'unknown');add(null,1,'verified_internal_test');add('catalogue-only',10,'verified_external','ecosystem_catalog');
+ sqlite.prepare('INSERT INTO mcp_pilot_credentials_v4 VALUES(?,?,?,NULL)').run('a'.repeat(64),'first',at(-10));
+ const db={prepare(sql){return {all:async()=>({results:sqlite.prepare(sql).all()}),first:async()=>sqlite.prepare(sql).get()};}};
+ const result=await adoption({ECOSYSTEM_DB:db});
+ assert.equal(result.available,true);assert.equal(result.verified_successful_business_calls,4);assert.equal(result.unknown_successful_business_calls,1);
+ assert.equal(result.verified_teams_7_days,2);assert.equal(result.repeated_on_distinct_utc_days_7,1);assert.equal(result.repeated_on_distinct_utc_days_30,2);
+ assert.deepEqual(result.retention_7_days,{eligible_teams:1,returned_after_interval:1,rate:1});
+ assert.deepEqual(result.retention_30_days,{eligible_teams:0,returned_after_interval:0,rate:null});
+ assert.doesNotMatch(JSON.stringify(result),/catalogue-only|"consumer_id"/);
+});
+test('reports missing databases as unavailable rather than zero',async()=>assert.equal((await adoption({})).available,false));
