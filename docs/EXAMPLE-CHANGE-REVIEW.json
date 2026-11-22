@@ -1,0 +1,76 @@
+{
+  "evidence_type": "publisher_authenticated_internal_demo_not_customer",
+  "elapsed_ms": 8750,
+  "schema_version": 1,
+  "kind": "dependency_change_review",
+  "package": "lodash",
+  "ecosystem": "npm",
+  "from": "4.17.15",
+  "to": "4.17.21",
+  "checked_at": "2026-11-22T10:34:37.253Z",
+  "evidence_complete": true,
+  "decision": "REVIEW_REMAINING_ADVISORIES",
+  "automatic_upgrade_authorized": false,
+  "automatic_deploy_authorized": false,
+  "before": {
+    "version": "4.17.15",
+    "known_advisories": 5,
+    "checked_at": "2026-11-22T10:34:35.494Z"
+  },
+  "after": {
+    "version": "4.17.21",
+    "known_advisories": 2,
+    "checked_at": "2026-11-22T10:34:36.764Z"
+  },
+  "advisory_ids_not_observed_in_target": [
+    "GHSA-29mw-wpgm-hmr9",
+    "GHSA-35jh-r3h4-6jhm",
+    "GHSA-p6mc-m468-83gw"
+  ],
+  "advisory_ids_newly_observed_in_target": [],
+  "evidence": {
+    "before": [
+      {
+        "id": "GHSA-29mw-wpgm-hmr9",
+        "url": "https://osv.dev/vulnerability/GHSA-29mw-wpgm-hmr9"
+      },
+      {
+        "id": "GHSA-35jh-r3h4-6jhm",
+        "url": "https://osv.dev/vulnerability/GHSA-35jh-r3h4-6jhm"
+      },
+      {
+        "id": "GHSA-p6mc-m468-83gw",
+        "url": "https://osv.dev/vulnerability/GHSA-p6mc-m468-83gw"
+      },
+      {
+        "id": "GHSA-r5fr-rjxr-66jc",
+        "url": "https://osv.dev/vulnerability/GHSA-r5fr-rjxr-66jc"
+      },
+      {
+        "id": "GHSA-xxjr-mmjv-4gpg",
+        "url": "https://osv.dev/vulnerability/GHSA-xxjr-mmjv-4gpg"
+      }
+    ],
+    "after": [
+      {
+        "id": "GHSA-r5fr-rjxr-66jc",
+        "url": "https://osv.dev/vulnerability/GHSA-r5fr-rjxr-66jc"
+      },
+      {
+        "id": "GHSA-xxjr-mmjv-4gpg",
+        "url": "https://osv.dev/vulnerability/GHSA-xxjr-mmjv-4gpg"
+      }
+    ]
+  },
+  "required_next_steps": [
+    "Review the cited advisory records and affected-version ranges.",
+    "Read release notes for the exact target version.",
+    "Run your project tests, build and integration checks.",
+    "Review transitive dependencies separately before a release decision."
+  ],
+  "limits": [
+    "Known advisory comparison only; absence of an ID is not proof a vulnerability was fixed.",
+    "No changelog parsing, source-code review, full lockfile scan or behavior/compatibility analysis.",
+    "This is publisher-provided tooling; a generated report does not prove independent adoption."
+  ]
+}
