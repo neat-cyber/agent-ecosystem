@@ -1,3 +1,5 @@
+> Mise à jour : V5 a depuis été validée en staging et déployée avec autorisation. Voir [RELEASE.md](RELEASE.md) pour les versions actives, les preuves et le blocage testnet. Les statuts de préparation ci-dessous décrivent l’audit avant ce déploiement.
+
 # OSEILLE V5 — audit, corrections et dossier de décision
 
 22 novembre 2026. Le code proposé n'est pas déployé. Aucun nouveau message commercial, jeton pilote, paiement ou abonnement n'a été créé. Les tests signés de lecture ont ajouté des événements internes D1 conformément à l'audit autorisé. L'état commercial reste sans client indépendant attribué ni recette démontrée.
