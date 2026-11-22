@@ -1,0 +1,75 @@
+{
+  "extracted_at_utc": "2026-11-22T08:33:35.320692+00:00",
+  "type": "snapshot_not_live_dashboard",
+  "usage_window_utc": [
+    "2026-11-21T08:20:00Z",
+    "2026-11-22T08:20:00Z"
+  ],
+  "source": "Cloudflare D1 mcp_reporting_v4, both production DBs",
+  "last_cron_utc": "2026-11-22T06:00:20.655Z",
+  "public_checks": {
+    "time": "2026-11-22T08:27:28.361Z",
+    "passed": 20,
+    "total": 20,
+    "signed_requests_recorded": 16
+  },
+  "latency": {
+    "source": "D1 mcp_events_v4_detail successful business calls only",
+    "window": "7-day rolling window at D1 extraction around 08:24 UTC; excludes documentation and failed calls",
+    "percentile": "nearest rank; samples <100, p99 approaches maximum",
+    "rows": [
+      {
+        "service": "agent-guardian",
+        "n": 27,
+        "p50_ms": 280,
+        "p95_ms": 418,
+        "p99_ms": 585
+      },
+      {
+        "service": "agent-repair",
+        "n": 28,
+        "p50_ms": 284,
+        "p95_ms": 423,
+        "p99_ms": 632
+      },
+      {
+        "service": "agent-signals",
+        "n": 33,
+        "p50_ms": 1382,
+        "p95_ms": 7855,
+        "p99_ms": 7960
+      },
+      {
+        "service": "agent-dependency-radar",
+        "n": 33,
+        "p50_ms": 1168,
+        "p95_ms": 1674,
+        "p99_ms": 2371
+      }
+    ]
+  },
+  "independent_clients": {
+    "source": "both D1 credential tables and Radar /adoption.json",
+    "d7": 0,
+    "d30": 0,
+    "second_days": 0,
+    "retention_d7": null,
+    "retention_d30": null,
+    "limit": "No enrolled team. Unknown is never independent. Cohorts are immature."
+  },
+  "premium": {
+    "source": "staging x402_premium_charges; production billing disabled",
+    "recorded_staging_settlements": 0,
+    "real_revenue_verified": 0,
+    "costs": null,
+    "contribution_margin": null,
+    "premium_intents": null,
+    "limit": "Empty payment table does not measure 402 challenges; no historical on-chain settlement demonstrated."
+  },
+  "hub_metrics_7d": {
+    "measured_at": "2026-11-22T08:30:17.600Z",
+    "total_calls": 281,
+    "verified_external": 0
+  },
+  "attribution": "Discovery has no stable visitor identity, so no individual conversion funnel or unique visitor rate is computed."
+}
