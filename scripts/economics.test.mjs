@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {scenario} from './economics.mjs';
+test('applies monthly free settlement allowance once, subtracts costs, allows losses',()=>{assert.equal(scenario({calls:1000,price:.05}).facilitation,0);const r=scenario({calls:10000,price:.05,variableCost:.005,fixedCost:20});assert.equal(r.operationalNet,421);assert.equal(scenario({calls:100,price:.05,variableCost:.1}).operationalNet,-5);assert.throws(()=>scenario({calls:-1,price:.05}));});
